@@ -9,13 +9,21 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('web_clientes', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
-    }
+public function up(): void
+{
+    Schema::create('web_clientes', function (Blueprint $table) {
+        $table->id();
+        $table->string('nombres');
+        $table->string('apellidos');
+        $table->string('dni', 8)->unique();
+        $table->string('email')->unique();
+        $table->string('telefono')->nullable();
+        $table->string('password_hash');
+        $table->timestamp('fecha_registro')->useCurrent();
+        $table->boolean('activo')->default(true);
+        $table->timestamps();
+    });
+}
 
     /**
      * Reverse the migrations.

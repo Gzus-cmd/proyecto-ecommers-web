@@ -9,13 +9,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('web_direcciones_cliente', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
-    }
+public function up(): void
+{
+    Schema::create('web_direcciones_cliente', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('cliente_id')->constrained('web_clientes')->onDelete('cascade');
+        $table->string('alias'); 
+        $table->string('direccion_completa');
+        $table->string('referencia')->nullable();
+        $table->string('distrito');
+        $table->string('ciudad');
+        $table->boolean('es_principal')->default(false);
+        $table->timestamps();
+    });
+}
 
     /**
      * Reverse the migrations.
