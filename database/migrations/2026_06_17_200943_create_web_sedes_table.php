@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('web_sedes', function (Blueprint $table) {
             $table->id();
+            $table->string('codigo')->unique();
+            $table->string('nombre');
+            $table->string('direccion');
+            $table->string('telefono');
+            $table->boolean('activo')->default(true);
             $table->timestamps();
         });
     }

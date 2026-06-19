@@ -13,9 +13,14 @@ return new class extends Migration
     {
         Schema::create('web_detalle_pedidos', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('pedido_id')->constrained('web_pedidos')->onDelete('cascade');
+            $table->string('sku_producto');
+            $table->integer('cantidad');
+            $table->decimal('precio_unitario', 10, 2);
+            $table->decimal('subtotal', 10, 2);
             $table->timestamps();
+            $table->foreign('sku_producto')->references('sku')->on('web_productos');
         });
-    }
 
     /**
      * Reverse the migrations.

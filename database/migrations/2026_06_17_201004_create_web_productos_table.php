@@ -12,7 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('web_productos', function (Blueprint $table) {
-            $table->id();
+            $table->string('sku')->primary();
+            $table->string('nombre_comercial');
+            $table->string('nombre_generico')->nullable();
+            $table->text('descripcion')->nullable();
+            $table->string('concentracion')->nullable();
+            $table->string('forma_farmaceutica')->nullable();
+            $table->decimal('precio_web', 10, 2);
+            $table->boolean('requiere_receta')->default(false);
+            $table->boolean('disponible')->default(true);
             $table->timestamps();
         });
     }

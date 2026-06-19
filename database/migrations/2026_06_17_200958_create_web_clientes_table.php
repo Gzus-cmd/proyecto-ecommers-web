@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('web_clientes', function (Blueprint $table) {
             $table->id();
+            $table->string('nombres');
+            $table->string('apellidos');
+            $table->string('dni');
+            $table->string('email')->unique();
+            $table->string('telefono');
+            $table->string('password_hash');
+            $table->timestamp('fecha_registro')->useCurrent();
+            $table->boolean('activo')->default(true);
             $table->timestamps();
         });
     }

@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('web_pedidos', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('cliente_id')->constrained('web_clientes');
+            $table->foreignId('sede_recojo_id')->nullable()->constrained('web_sedes');
+            $table->foreignId('direccion_envio_id')->nullable()->constrained('web_direcciones_cliente');
+            $table->timestamp('fecha_pedido')->useCurrent();
+            $table->foreignId('estado_id')->constrained('web_estados_pedido');
+            $table->decimal('subtotal', 10, 2);
+            $table->decimal('impuesto', 10, 2);
+            $table->decimal('total', 10, 2);
             $table->timestamps();
         });
     }
