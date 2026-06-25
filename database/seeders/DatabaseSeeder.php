@@ -2,22 +2,27 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\WebEstadoPedido;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        $this->call(RoleSeeder::class);
+
+
+        $estados = ['Pendiente', 'Pagado', 'Enviado', 'Entregado', 'Cancelado'];
+        foreach ($estados as $e) { WebEstadoPedido::firstOrCreate(['nombre' => $e]); }
+
+
+        $this->call(CentralMockSeeder::class);
+
+
+        $this->call(WebProductoSeeder::class);
+        
+
+        $this->call(WebClienteSeeder::class);
     }
 }
