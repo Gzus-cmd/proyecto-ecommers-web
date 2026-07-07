@@ -11,6 +11,15 @@ class CentralProductoMaestroSimulacion extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
+    protected $fillable = [
+        'sku', 'categoria_id', 'nombre_tecnico', 'principio_activo', 
+        'laboratorio', 'presentacion', 'requiere_receta'
+    ];
+
+    public function categoriaRelacion() {
+        return $this->belongsTo(CentralCategoriaSimulacion::class, 'categoria_id');
+    }
+
     public function lotes() {
         return $this->hasMany(CentralLoteSimulacion::class, 'sku', 'sku');
     }
