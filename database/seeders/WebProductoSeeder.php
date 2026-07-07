@@ -15,19 +15,24 @@ class WebProductoSeeder extends Seeder
         DB::table('web_productos')->truncate();
         Schema::enableForeignKeyConstraints();
 
-        $disponibles = DB::table('central_productos_maestro_simulacion')->limit(10)->get();
+        $maestros = DB::table('central_productos_maestro_simulacion')->get();
 
-        foreach ($disponibles as $p) {
-            $nombre = str_replace('[SIMULACIÓN] ', '', $p->nombre_tecnico);
+        foreach ($maestros as $m) {
+            $nombreComercial = str_replace('[SIM] ', '', $m->nombre_tecnico);
+            
             DB::table('web_productos')->insert([
-                'sku' => $p->sku,
-                'nombre_comercial' => $nombre . ' - Oferta Web',
-                'nombre_generico' => $p->principio_activo,
-                'slug' => Str::slug($nombre),
-                'precio_web' => rand(10, 90) + 0.90,
+                'sku' => $m->sku,
+                'nombre_comercial' => $nombreComercial . ' - Genérico MK',
+                'nombre_generico' => $m->principio_activo,
+                'slug' => Str::slug($nombreComercial . '-' . $m->sku),
+                'descripcion' => 'Medicamento certificado para el tratamiento de afecciones en la categoría ' . $m->categoria,
+                'concentracion' => 'Según Ficha Técnica',
+                'forma_farmaceutica' => 'Tabletas/Crema',
+                'precio_web' => rand(15, 120) + 0.90,
+                'requiere_receta' => in_array($m->categoria, ['Antibióticos']),
                 'disponible' => true,
-                'imagen_url' => 'https://via.placeholder.com/400x400.png?text=' . urlencode($nombre),
-                'created_at' => now()
+                'imagen_url' => "https://placehold.co/600x600/072D44/FFFFFF?text=" . urlencode($nombreComercial),
+                'created_at' => now(),
             ]);
         }
     }
