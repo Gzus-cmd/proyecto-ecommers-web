@@ -189,10 +189,10 @@ const confirmarEliminacion = () => {
                                   
                                     <Link 
                                         :href="WebProductoController.show.url(p.sku)"
-                                        class="p-2 hover:bg-primary/10 rounded-lg text-muted-foreground hover:text-primary transition-colors"
+                                        class="text-primary font-black uppercase text-[10px] tracking-widest hover:underline flex items-center gap-1.5"
                                         title="Ver Ficha Completa"
                                     >
-                                        <Eye class="size-4" />
+                                        <Eye class="size-3.5" /> Ver
                                     </Link>
 
                                     

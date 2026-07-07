@@ -3,7 +3,8 @@ import { computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import { 
     LayoutGrid, Package, ShoppingCart, Users, 
-    Globe, ShieldCheck, Settings2, UserCog 
+    Globe, ShieldCheck, Settings2, UserCog,
+    Image as ImageIcon
 } from 'lucide-vue-next';
 
 import AppLogo from '@/components/AppLogo.vue';
@@ -23,6 +24,7 @@ import * as WebProductoController from '@/actions/App/Http/Controllers/Admin/Web
 import * as WebClienteController from '@/actions/App/Http/Controllers/Admin/WebClienteController';
 import * as WebPedidoController from '@/actions/App/Http/Controllers/Admin/WebPedidoController';
 import * as UserController from '@/actions/App/Http/Controllers/Admin/UserController';
+import * as WebBannerController from '@/actions/App/Http/Controllers/Admin/WebBannerController';
 
 const { can } = useAuth(); 
 
@@ -35,7 +37,7 @@ const navigationSections = computed<NavSection[]>(() => [
     {
         label: 'Resumen',
         items: [
-            { title: 'Ver Sitio Web', href: '/', icon: Globe },
+            { title: 'Ver Sitio Web', href: '/', icon: Globe},
             { title: 'Panel de Control', href: dashboard(), icon: LayoutGrid },
         ],
     },
@@ -47,6 +49,12 @@ const navigationSections = computed<NavSection[]>(() => [
                 title: 'Catálogo de Productos',
                 href: WebProductoController.index.url(),
                 icon: Package 
+            }] : []),
+
+                ...(can('banners.view') ? [{ 
+                title: 'Banners del Home',
+                href: WebBannerController.index.url(),
+                icon: ImageIcon 
             }] : []),
 
 

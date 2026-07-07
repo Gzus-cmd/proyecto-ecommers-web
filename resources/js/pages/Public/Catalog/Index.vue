@@ -50,7 +50,7 @@ const cleanLabel = (label: string) => label.replace('&laquo; Previous', '').repl
 
         <div class="flex flex-col lg:flex-row gap-10">
 
-            <aside class="w-full lg:w-72 flex-shrink-0">
+            <aside class="w-full lg:w-72 shrink-0">
                 <div class="sticky top-24 bg-white rounded-[2.5rem] border border-gray-100 p-8 shadow-xl shadow-pv-navy/5">
                     <div class="flex items-center justify-between mb-8">
                         <h3 class="font-black text-pv-navy text-xs uppercase tracking-widest flex items-center gap-2"><Filter class="size-4" /> Filtros</h3>
@@ -96,7 +96,7 @@ const cleanLabel = (label: string) => label.replace('&laquo; Previous', '').repl
 
             <main class="flex-1">
 
-                <div class="bg-white border border-gray-100 rounded-[2rem] p-5 mb-8 flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm">
+                <div class="bg-white border border-gray-100 rounded-4xl p-5 mb-8 flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm">
                     <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Mostrando <span class="text-pv-navy">{{ productos.from || 0 }}-{{ productos.to || 0 }}</span> de {{ productos.total }}</p>
                     <div class="flex items-center gap-4">
                         <span class="text-[9px] font-black text-gray-400 uppercase italic">Ordenar:</span>
@@ -116,7 +116,7 @@ const cleanLabel = (label: string) => label.replace('&laquo; Previous', '').repl
                         class="group bg-white rounded-[2.5rem] border border-gray-50 p-6 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col shadow-sm">
                         
 
-                        <div class="aspect-square bg-[#F8FAFC] rounded-[2rem] mb-6 flex items-center justify-center p-8 overflow-hidden relative">
+                        <div class="aspect-square bg-[#F8FAFC] rounded-4xl mb-6 flex items-center justify-center p-8 overflow-hidden relative">
 
                             <img :src="prod.imagen_url" 
                                 class="w-full h-full object-contain transform transition-transform duration-700 group-hover:scale-110" 
