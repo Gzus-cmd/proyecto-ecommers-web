@@ -6,10 +6,14 @@ use App\Http\Controllers\Admin\WebProductoController;
 use App\Http\Controllers\Admin\WebClienteController;
 use App\Http\Controllers\Admin\WebPedidoController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Public\HomeController;
+use App\Http\Controllers\Public\CatalogController;
+use App\Http\Controllers\Admin\WebBannerController;
 
-Route::inertia('/', 'Welcome', [
-    'canRegister' => Features::enabled(Features::registration()),
-])->name('home');
+//Rutas publicas
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/catalogo', [CatalogController::class, 'index'])->name('catalog.index');
+
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard general
@@ -43,6 +47,17 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 
     // CRUD de Usuarios Administrativos
     Route::resource('users', UserController::class);
+
+    //Banner
+    Route::get('/banners', [WebBannerController::class, 'index'])->name('banners.index');
+    Route::get('/banners/nuevo', [WebBannerController::class, 'create'])->name('banners.create');
+    Route::post('/banners', [WebBannerController::class, 'store'])->name('banners.store');
+    Route::delete('/banners/{banner}', [WebBannerController::class, 'destroy'])->name('banners.destroy');
+    
+    Route::get('/banners/{banner}/editar', [WebBannerController::class, 'edit'])->name('banners.edit');
+
+    Route::post('/banners/{banner}', [WebBannerController::class, 'update'])->name('banners.update');
+
 
 });
 
