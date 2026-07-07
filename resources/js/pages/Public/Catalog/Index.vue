@@ -133,7 +133,7 @@ const cleanLabel = (label: string) => label.replace('&laquo; Previous', '').repl
                         <div class="flex-1 flex flex-col">
                             <span class="text-[9px] font-black text-pv-accent uppercase tracking-widest mb-2">{{ prod.categoria_nombre }}</span>
 
-                            <h2 class="text-lg font-black text-pv-navy leading-tight italic uppercase tracking-tighter group-hover:text-pv-accent transition-colors line-clamp-2 h-12 overflow-hidden mb-1">
+                            <h2 class="text-lg line-clamp-2 font-black text-pv-navy leading-tight italic uppercase tracking-tighter group-hover:text-pv-accent transition-colors h-12 overflow-hidden mb-1">
                                 {{ prod.nombre_comercial }}
                             </h2>
                             
@@ -176,7 +176,6 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-app
 
 .line-clamp-2 {
   display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;  
   overflow: hidden;
 }
