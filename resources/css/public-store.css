@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+:root {
+    --store-bg: #F8F9FA;
+    --store-navy: #072D44;
+    --store-blue-mid: #064469;
+    --store-accent: #5790AB;
+    --store-border: #E9ECEF;
+}
+
+
+.theme-public-store {
+    background-color: var(--store-bg);
+    color: var(--store-navy);
+    font-family: 'Instrument Sans', sans-serif;
+}
+
+
+.theme-public-store .bg-dark-section h1,
+.theme-public-store .bg-dark-section h2,
+.theme-public-store .bg-dark-section p,
+.theme-public-store .bg-dark-section span {
+    color: white !important;
+}
+
+
+.text-pv-navy { color: var(--store-navy); }
+.text-pv-accent { color: var(--store-accent); }
