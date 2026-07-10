@@ -13,6 +13,8 @@ use App\Http\Controllers\Admin\WebBannerController;
 //Rutas publicas
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/catalogo', [CatalogController::class, 'index'])->name('catalog.index');
+// Detalle de Producto
+Route::get('/producto/{producto:slug}', [App\Http\Controllers\Public\ProductController::class, 'show'])->name('product.show');
 
 
 Route::middleware(['auth', 'verified'])->group(function () {
