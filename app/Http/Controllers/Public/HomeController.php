@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\WebProducto;
+use App\Models\WebBanner;
 use App\Models\CentralCategoriaSimulacion;
-use App\Models\WebBanner; 
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -14,12 +14,19 @@ class HomeController extends Controller
     public function index()
     {
 
+        $fechaSegura = now()->addMonths(6);
+
+
         $categories = CentralCategoriaSimulacion::orderBy('nombre')->get();
 
 
         $banners = WebBanner::query()
             ->with(['producto.maestro.categoriaRelacion'])
             ->where('activo', true)
+            ->whereHas('producto.maestro.lotes', function($q) use ($fechaSegura) {
+                $q->where('cantidad_actual', '>', 0)
+                  ->where('fecha_vencimiento', '>=', $fechaSegura);
+            })
             ->where(function($query) {
                 $query->whereNull('fecha_fin')
                       ->orWhere('fecha_fin', '>=', now()->startOfDay());
@@ -28,13 +35,12 @@ class HomeController extends Controller
             ->take(4)
             ->get();
 
-
         $featuredProducts = WebProducto::query()
             ->join('central_lotes_simulacion', 'web_productos.sku', '=', 'central_lotes_simulacion.sku')
             ->select('web_productos.*')
             ->where('web_productos.disponible', true)
             ->where('central_lotes_simulacion.cantidad_actual', '>', 0)
-            ->where('central_lotes_simulacion.fecha_vencimiento', '>', now())
+            ->where('central_lotes_simulacion.fecha_vencimiento', '>=', $fechaSegura)
             ->groupBy('web_productos.sku')
             ->with(['maestro.categoriaRelacion']) 
             ->take(8)
