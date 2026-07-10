@@ -38,7 +38,10 @@ class CatalogController extends Controller
 
 
         if ($request->boolean('in_stock', true)) {
-            $query->whereHas('maestro.lotes', fn($q) => $q->where('cantidad_actual', '>', 0));
+            $query->whereHas('maestro.lotes', function ($q) {
+                $q->where('cantidad_actual', '>', 0)
+                ->where('fecha_vencimiento', '>=', now()->addMonths(6));
+            });
         }
 
 

@@ -3,7 +3,13 @@ import { Head, router, Link } from '@inertiajs/vue3';
 import { reactive, watch } from 'vue';
 import * as CatalogController from '@/actions/App/Http/Controllers/Public/CatalogController';
 import * as HomeController from '@/actions/App/Http/Controllers/Public/HomeController';
-import { ChevronLeft, ChevronRight, Bookmark, ShoppingCart, Filter } from 'lucide-vue-next';
+// ADICIÓN: Importamos el controlador de detalle para los enlaces
+import * as ProductController from '@/actions/App/Http/Controllers/Public/ProductController';
+
+import { 
+    ChevronLeft, ChevronRight, Bookmark, ShoppingCart, 
+    Filter, Search 
+} from 'lucide-vue-next';
 import debounce from 'lodash/debounce';
 
 const props = defineProps<{
@@ -12,6 +18,7 @@ const props = defineProps<{
     filters: any
 }>();
 
+// MANTENEMOS: Todo tu estado reactivo de filtros
 const form = reactive({
     categoria: props.filters?.categoria || '',
     sort: props.filters?.sort || 'name_asc',
@@ -20,6 +27,7 @@ const form = reactive({
     in_stock: props.filters?.in_stock === undefined ? true : String(props.filters.in_stock) === 'true'
 });
 
+// MANTENEMOS: Tu lógica de navegación fluida
 const updateUrl = (cambios: any = {}) => {
     Object.assign(form, cambios);
     router.get('/catalogo', { ...form }, { preserveState: true, replace: true, preserveScroll: true });
@@ -27,9 +35,11 @@ const updateUrl = (cambios: any = {}) => {
 
 const applyFiltersDebounced = debounce(() => updateUrl(), 500);
 
+// MANTENEMOS: Tus observadores (watchers)
 watch(() => [form.sort, form.in_stock], () => updateUrl());
 watch(() => props.filters.categoria, (newSlug) => { form.categoria = newSlug || ''; }, { immediate: true });
 
+// MANTENEMOS: Tu limpieza de etiquetas de paginación
 const cleanLabel = (label: string) => label.replace('&laquo; Previous', '').replace('Next &raquo;', '');
 </script>
 
@@ -37,111 +47,117 @@ const cleanLabel = (label: string) => label.replace('&laquo; Previous', '').repl
     <Head title="Medicamentos | PharmaVictoria" />
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-
-        <nav class="flex text-[10px] font-black uppercase tracking-[0.2em] mb-6 gap-2">
+        
+        <!-- MANTENEMOS: Breadcrumbs corregidos -->
+        <nav class="flex text-[10px] font-black uppercase tracking-[0.2em] mb-6 gap-2 italic">
             <Link :href="HomeController.index.url()" class="text-gray-400 hover:text-pv-navy transition-colors">Inicio</Link>
-            <span class="text-gray-300">/</span> <span class="text-pv-navy font-bold">Medicamentos</span>
+            <span class="text-gray-300">/</span> 
+            <span class="text-pv-navy font-bold tracking-tighter">Medicamentos</span>
         </nav>
 
+        <!-- MANTENEMOS: Título de página imponente -->
         <header class="mb-12">
             <h1 class="text-6xl font-black text-pv-navy tracking-tighter italic">Medicamentos</h1>
-            <p class="text-gray-500 mt-2 italic text-sm">Productos certificados con stock real verificado.</p>
+            <p class="text-gray-500 mt-2 italic text-sm">Productos certificados con stock real verificado desde el almacén central.</p>
         </header>
 
         <div class="flex flex-col lg:flex-row gap-10">
-
-            <aside class="w-full lg:w-72 shrink-0">
+            
+            <!-- MANTENEMOS: Sidebar Card Completo -->
+            <aside class="w-full lg:w-72 flex-shrink-0">
                 <div class="sticky top-24 bg-white rounded-[2.5rem] border border-gray-100 p-8 shadow-xl shadow-pv-navy/5">
+                    
                     <div class="flex items-center justify-between mb-8">
-                        <h3 class="font-black text-pv-navy text-xs uppercase tracking-widest flex items-center gap-2"><Filter class="size-4" /> Filtros</h3>
-                        <button @click="updateUrl({categoria: '', min_price: '', max_price: ''})" class="text-[9px] font-black text-pv-accent hover:text-pv-navy uppercase transition-colors">Limpiar</button>
+                        <h3 class="font-black text-pv-navy text-xs uppercase tracking-widest flex items-center gap-2">
+                            <Filter class="size-4" /> Filtros
+                        </h3>
+                        <button @click="updateUrl({categoria: '', min_price: '', max_price: ''})" class="text-[9px] font-black text-pv-accent hover:text-pv-navy uppercase tracking-widest transition-colors">Limpiar</button>
                     </div>
 
                     <div class="space-y-10">
-
+                        <!-- Categorías con Radio Buttons -->
                         <section>
-                            <h4 class="font-black text-pv-navy text-[10px] uppercase mb-5 italic flex items-center"><span class="w-1.5 h-1.5 bg-pv-accent rounded-full mr-2"></span> Categorías</h4>
+                            <h4 class="font-black text-pv-navy text-[10px] uppercase mb-5 italic flex items-center">
+                                <span class="w-1.5 h-1.5 bg-pv-accent rounded-full mr-2 shadow-sm"></span> 
+                                Categorías
+                            </h4>
                             <div class="space-y-3">
                                 <label class="flex items-center gap-3 cursor-pointer group">
-                                    <input type="radio" :checked="form.categoria === ''" @change="updateUrl({categoria: ''})" name="cat" class="size-4 text-pv-navy border-gray-200" />
-                                    <span class="text-xs font-bold" :class="form.categoria === '' ? 'text-pv-navy font-black' : 'text-gray-400'">Todas</span>
+                                    <input type="radio" :checked="form.categoria === ''" @change="updateUrl({categoria: ''})" name="cat_filter" class="size-4 text-pv-navy border-gray-200 focus:ring-pv-accent/30" />
+                                    <span class="text-xs font-bold transition-colors" :class="form.categoria === '' ? 'text-pv-navy font-black' : 'text-gray-400'">Todas</span>
                                 </label>
-                                <label v-for="cat in categorias" :key="cat.slug" class="flex items-center gap-3 cursor-pointer">
-                                    <input type="radio" :checked="form.categoria === cat.slug" @change="updateUrl({categoria: cat.slug})" name="cat" class="size-4 text-pv-navy border-gray-200" />
-                                    <span class="text-xs font-bold transition-colors uppercase tracking-tight" :class="form.categoria === cat.slug ? 'text-pv-navy font-black' : 'text-gray-400'">{{ cat.nombre }}</span>
+                                <label v-for="cat in categorias" :key="cat.slug" class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="radio" :checked="form.categoria === cat.slug" @change="updateUrl({categoria: cat.slug})" name="cat_filter" class="size-4 text-pv-navy border-gray-200 focus:ring-pv-accent/30" />
+                                    <span class="text-xs font-bold transition-colors uppercase tracking-tight" :class="form.categoria === cat.slug ? 'text-pv-navy font-black' : 'text-gray-400 group-hover:text-pv-navy'">{{ cat.nombre }}</span>
                                 </label>
                             </div>
                         </section>
 
-
+                        <!-- Precios -->
                         <section>
-                            <h4 class="font-black text-pv-navy text-[10px] uppercase mb-5 italic flex items-center"><span class="w-1.5 h-1.5 bg-pv-accent rounded-full mr-2"></span> Rango de Precio</h4>
+                            <h4 class="font-black text-pv-navy text-[10px] uppercase mb-5 italic flex items-center">
+                                <span class="w-1.5 h-1.5 bg-pv-accent rounded-full mr-2 shadow-sm"></span> 
+                                Precio
+                            </h4>
                             <div class="flex items-center gap-2">
                                 <input v-model="form.min_price" @input="applyFiltersDebounced" type="number" placeholder="Mín" class="w-full h-10 px-3 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold outline-none" />
                                 <input v-model="form.max_price" @input="applyFiltersDebounced" type="number" placeholder="Máx" class="w-full h-10 px-3 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold outline-none" />
                             </div>
                         </section>
 
-
+                        <!-- Stock -->
                         <section>
                             <label class="flex items-center gap-3 cursor-pointer group">
-                                <input type="checkbox" v-model="form.in_stock" class="size-5 border-gray-100 rounded-lg accent-pv-navy" />
-                                <span class="text-[10px] font-black text-pv-navy uppercase tracking-widest">Solo en Stock</span>
+                                <input type="checkbox" v-model="form.in_stock" @change="updateUrl({})" class="size-5 border-gray-100 rounded-lg accent-pv-navy" />
+                                <span class="text-xs font-bold text-gray-500 group-hover:text-pv-navy transition-colors">Solo en Stock</span>
                             </label>
                         </section>
                     </div>
                 </div>
             </aside>
 
-
+            <!-- PRODUCT GRID -->
             <main class="flex-1">
-
-                <div class="bg-white border border-gray-100 rounded-4xl p-5 mb-8 flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm">
-                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Mostrando <span class="text-pv-navy">{{ productos.from || 0 }}-{{ productos.to || 0 }}</span> de {{ productos.total }}</p>
-                    <div class="flex items-center gap-4">
-                        <span class="text-[9px] font-black text-gray-400 uppercase italic">Ordenar:</span>
-                        <select v-model="form.sort" class="bg-[#072D44] text-white rounded-xl px-6 py-2.5 text-[10px] font-black outline-none cursor-pointer uppercase tracking-widest">
-                            <option value="name_asc">A - Z</option>
-                            <option value="price_asc">Menor Precio</option>
-                            <option value="price_desc">Mayor Precio</option>
-                        </select>
-                    </div>
+                <!-- MANTENEMOS: Toolbar superior -->
+                <div class="bg-white border border-gray-100 rounded-[2rem] p-5 mb-8 flex justify-between items-center shadow-sm">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                        Mostrando <span class="text-pv-navy font-black">{{ productos.from }}-{{ productos.to }}</span> de {{ productos.total }} productos
+                    </p>
+                    <select v-model="form.sort" @change="updateUrl({})" class="bg-[#072D44] text-white rounded-xl px-5 py-2 text-xs font-black outline-none cursor-pointer uppercase tracking-widest italic">
+                        <option value="name_asc">A - Z</option>
+                        <option value="price_asc">Menor Precio</option>
+                        <option value="price_desc">Mayor Precio</option>
+                    </select>
                 </div>
 
-
-
-
+                <!-- Grilla Principal -->
                 <div v-if="productos.data.length" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
                     <div v-for="prod in productos.data" :key="prod.sku" 
                         class="group bg-white rounded-[2.5rem] border border-gray-50 p-6 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col shadow-sm">
                         
-
-                        <div class="aspect-square bg-[#F8FAFC] rounded-4xl mb-6 flex items-center justify-center p-8 overflow-hidden relative">
-
-                            <img :src="prod.imagen_url" 
-                                class="w-full h-full object-contain transform transition-transform duration-700 group-hover:scale-110" 
-                                :alt="prod.nombre_comercial" />
-                            
-
-                            <button class="absolute top-5 right-5 p-2.5 bg-white/90 backdrop-blur rounded-full shadow-sm hover:bg-white transition-all group/fav">
-
+                        <!-- IMAGEN CON ENLACE (Sin perder el diseño ni animación) -->
+                        <Link :href="ProductController.show.url(prod.slug)" class="aspect-square bg-[#F8FAFC] rounded-[2rem] mb-6 flex items-center justify-center p-8 overflow-hidden relative">
+                             <img :src="prod.imagen_url" class="w-full h-full object-contain transform transition-transform duration-700 group-hover:scale-110" :alt="prod.nombre_comercial" />
+                             
+                             <button class="absolute top-5 right-5 p-2.5 bg-white/80 backdrop-blur rounded-full shadow-sm hover:bg-white transition-all group/fav">
                                 <Bookmark class="size-4 text-pv-navy/40 group-hover/fav:text-pv-navy transition-colors" />
-                            </button>
-                        </div>
-
+                             </button>
+                        </Link>
 
                         <div class="flex-1 flex flex-col">
                             <span class="text-[9px] font-black text-pv-accent uppercase tracking-widest mb-2">{{ prod.categoria_nombre }}</span>
 
-                            <h2 class="text-lg line-clamp-2 font-black text-pv-navy leading-tight italic uppercase tracking-tighter group-hover:text-pv-accent transition-colors h-12 overflow-hidden mb-1">
-                                {{ prod.nombre_comercial }}
-                            </h2>
+                            <!-- TÍTULO CON ENLACE (Mismo tamaño h-12 y line-clamp) -->
+                            <Link :href="ProductController.show.url(prod.slug)">
+                                <h2 class="text-lg font-black text-pv-navy leading-tight italic uppercase tracking-tighter hover:text-pv-accent transition-colors line-clamp-2 h-12 overflow-hidden mb-1">
+                                    {{ prod.nombre_comercial }}
+                                </h2>
+                            </Link>
                             
                             <p class="text-[10px] text-gray-400 font-medium italic line-clamp-1">
                                 {{ prod.nombre_generico }} — {{ prod.concentracion }}
                             </p>
                             
-
                             <div class="mt-8 flex items-center justify-between pt-6 border-t border-gray-50">
                                 <div class="flex flex-col">
                                     <span class="text-[9px] text-gray-300 font-black uppercase tracking-widest">Precio Online</span>
@@ -155,10 +171,14 @@ const cleanLabel = (label: string) => label.replace('&laquo; Previous', '').repl
                     </div>
                 </div>
 
-
-                <div v-if="productos.links.length > 3" class="mt-24 flex justify-center items-center gap-2">
+                <!-- MANTENEMOS: Paginación impecable -->
+                <div v-if="productos.links.length > 3" class="mt-20 flex justify-center items-center gap-2">
                     <template v-for="(link, k) in productos.links" :key="k">
-                        <Link v-if="link.url" :href="link.url" class="size-12 flex items-center justify-center text-sm font-bold rounded-xl border transition-all" :class="link.active ? 'bg-[#072D44] border-[#072D44] text-white shadow-lg':'bg-white border-gray-100 text-gray-600 hover:bg-gray-50'">
+                        <Link v-if="link.url" :href="link.url" 
+                              class="size-12 flex items-center justify-center text-sm font-bold rounded-lg border transition-all"
+                              :class="link.active 
+                                ? 'bg-[#072D44] border-[#072D44] text-white shadow-lg' 
+                                : 'bg-white text-gray-600 border-gray-100 hover:bg-gray-50'">
                             <ChevronLeft v-if="k === 0" class="size-4" />
                             <ChevronRight v-else-if="k === productos.links.length - 1" class="size-4" />
                             <span v-else>{{ cleanLabel(link.label) }}</span>
@@ -172,7 +192,6 @@ const cleanLabel = (label: string) => label.replace('&laquo; Previous', '').repl
 
 <style scoped>
 input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-
 
 .line-clamp-2 {
   display: -webkit-box;
