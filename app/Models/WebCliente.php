@@ -3,12 +3,30 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo; 
 
 class WebCliente extends Model
 {
     protected $table = 'web_clientes';
-    protected $fillable = ['nombres', 'apellidos', 'dni', 'email', 'telefono', 'password_hash', 'activo'];
+    
+    protected $fillable = [
+        'user_id', 
+        'nombres', 
+        'apellidos', 
+        'dni', 
+        'email', 
+        'telefono', 
+        'password_hash', 
+        'activo'
+    ];
+
     protected $hidden = ['password_hash'];
+
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
     public function pedidos() {
         return $this->hasMany(WebPedido::class, 'cliente_id');
