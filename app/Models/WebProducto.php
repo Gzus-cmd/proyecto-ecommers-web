@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\ClinicalSecurityScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -12,6 +13,11 @@ class WebProducto extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
+
+   /* protected static function booted(): void
+    {
+        static::addGlobalScope(new ClinicalSecurityScope);
+    }*/
 
     protected $fillable = [
         'sku', 
@@ -46,7 +52,6 @@ class WebProducto extends Model
     ];
 
 
-
     public function maestro() {
         return $this->belongsTo(CentralProductoMaestroSimulacion::class, 'sku', 'sku');
     }
@@ -70,19 +75,17 @@ class WebProducto extends Model
 
 
     public function getStockTotalAttribute() {
-
         return DB::table('central_lotes_simulacion')
             ->where('sku', $this->sku)
-            ->where('fecha_vencimiento', '>', now())
+            ->where('fecha_vencimiento', '>', now()->addMonths(6)) 
             ->sum('cantidad_actual');
     }
-
 
     public function getDisponibleRecojoAttribute() {
         $stockSedePrincipal = DB::table('central_lotes_simulacion')
             ->where('sku', $this->sku)
             ->where('sede_id', 1)
-            ->where('fecha_vencimiento', '>', now())
+            ->where('fecha_vencimiento', '>', now()->addMonths(6)) 
             ->sum('cantidad_actual');
 
         return $stockSedePrincipal > 0;
