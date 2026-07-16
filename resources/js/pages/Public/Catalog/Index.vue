@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Head, router, Link } from '@inertiajs/vue3';
+import { useCart } from '@/composables/useCart';
 import { reactive, watch } from 'vue';
 import * as CatalogController from '@/actions/App/Http/Controllers/Public/CatalogController';
 import * as HomeController from '@/actions/App/Http/Controllers/Public/HomeController';
-// ADICIÓN: Importamos el controlador de detalle para los enlaces
 import * as ProductController from '@/actions/App/Http/Controllers/Public/ProductController';
 
 import { 
@@ -18,7 +18,7 @@ const props = defineProps<{
     filters: any
 }>();
 
-// MANTENEMOS: Todo tu estado reactivo de filtros
+
 const form = reactive({
     categoria: props.filters?.categoria || '',
     sort: props.filters?.sort || 'name_asc',
@@ -27,7 +27,7 @@ const form = reactive({
     in_stock: props.filters?.in_stock === undefined ? true : String(props.filters.in_stock) === 'true'
 });
 
-// MANTENEMOS: Tu lógica de navegación fluida
+
 const updateUrl = (cambios: any = {}) => {
     Object.assign(form, cambios);
     router.get('/catalogo', { ...form }, { preserveState: true, replace: true, preserveScroll: true });
@@ -35,12 +35,14 @@ const updateUrl = (cambios: any = {}) => {
 
 const applyFiltersDebounced = debounce(() => updateUrl(), 500);
 
-// MANTENEMOS: Tus observadores (watchers)
+
 watch(() => [form.sort, form.in_stock], () => updateUrl());
 watch(() => props.filters.categoria, (newSlug) => { form.categoria = newSlug || ''; }, { immediate: true });
 
-// MANTENEMOS: Tu limpieza de etiquetas de paginación
+
 const cleanLabel = (label: string) => label.replace('&laquo; Previous', '').replace('Next &raquo;', '');
+
+const { addToCart } = useCart();
 </script>
 
 <template>
@@ -48,14 +50,14 @@ const cleanLabel = (label: string) => label.replace('&laquo; Previous', '').repl
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         
-        <!-- MANTENEMOS: Breadcrumbs corregidos -->
+
         <nav class="flex text-[10px] font-black uppercase tracking-[0.2em] mb-6 gap-2 italic">
             <Link :href="HomeController.index.url()" class="text-gray-400 hover:text-pv-navy transition-colors">Inicio</Link>
             <span class="text-gray-300">/</span> 
             <span class="text-pv-navy font-bold tracking-tighter">Medicamentos</span>
         </nav>
 
-        <!-- MANTENEMOS: Título de página imponente -->
+
         <header class="mb-12">
             <h1 class="text-6xl font-black text-pv-navy tracking-tighter italic">Medicamentos</h1>
             <p class="text-gray-500 mt-2 italic text-sm">Productos certificados con stock real verificado desde el almacén central.</p>
@@ -63,7 +65,7 @@ const cleanLabel = (label: string) => label.replace('&laquo; Previous', '').repl
 
         <div class="flex flex-col lg:flex-row gap-10">
             
-            <!-- MANTENEMOS: Sidebar Card Completo -->
+
             <aside class="w-full lg:w-72 flex-shrink-0">
                 <div class="sticky top-24 bg-white rounded-[2.5rem] border border-gray-100 p-8 shadow-xl shadow-pv-navy/5">
                     
@@ -75,7 +77,7 @@ const cleanLabel = (label: string) => label.replace('&laquo; Previous', '').repl
                     </div>
 
                     <div class="space-y-10">
-                        <!-- Categorías con Radio Buttons -->
+
                         <section>
                             <h4 class="font-black text-pv-navy text-[10px] uppercase mb-5 italic flex items-center">
                                 <span class="w-1.5 h-1.5 bg-pv-accent rounded-full mr-2 shadow-sm"></span> 
@@ -93,7 +95,7 @@ const cleanLabel = (label: string) => label.replace('&laquo; Previous', '').repl
                             </div>
                         </section>
 
-                        <!-- Precios -->
+
                         <section>
                             <h4 class="font-black text-pv-navy text-[10px] uppercase mb-5 italic flex items-center">
                                 <span class="w-1.5 h-1.5 bg-pv-accent rounded-full mr-2 shadow-sm"></span> 
@@ -105,7 +107,7 @@ const cleanLabel = (label: string) => label.replace('&laquo; Previous', '').repl
                             </div>
                         </section>
 
-                        <!-- Stock -->
+
                         <section>
                             <label class="flex items-center gap-3 cursor-pointer group">
                                 <input type="checkbox" v-model="form.in_stock" @change="updateUrl({})" class="size-5 border-gray-100 rounded-lg accent-pv-navy" />
@@ -116,9 +118,9 @@ const cleanLabel = (label: string) => label.replace('&laquo; Previous', '').repl
                 </div>
             </aside>
 
-            <!-- PRODUCT GRID -->
+
             <main class="flex-1">
-                <!-- MANTENEMOS: Toolbar superior -->
+
                 <div class="bg-white border border-gray-100 rounded-[2rem] p-5 mb-8 flex justify-between items-center shadow-sm">
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">
                         Mostrando <span class="text-pv-navy font-black">{{ productos.from }}-{{ productos.to }}</span> de {{ productos.total }} productos
@@ -130,12 +132,12 @@ const cleanLabel = (label: string) => label.replace('&laquo; Previous', '').repl
                     </select>
                 </div>
 
-                <!-- Grilla Principal -->
+
                 <div v-if="productos.data.length" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
                     <div v-for="prod in productos.data" :key="prod.sku" 
                         class="group bg-white rounded-[2.5rem] border border-gray-50 p-6 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col shadow-sm">
                         
-                        <!-- IMAGEN CON ENLACE (Sin perder el diseño ni animación) -->
+
                         <Link :href="ProductController.show.url(prod.slug)" class="aspect-square bg-[#F8FAFC] rounded-[2rem] mb-6 flex items-center justify-center p-8 overflow-hidden relative">
                              <img :src="prod.imagen_url" class="w-full h-full object-contain transform transition-transform duration-700 group-hover:scale-110" :alt="prod.nombre_comercial" />
                              
@@ -147,7 +149,7 @@ const cleanLabel = (label: string) => label.replace('&laquo; Previous', '').repl
                         <div class="flex-1 flex flex-col">
                             <span class="text-[9px] font-black text-pv-accent uppercase tracking-widest mb-2">{{ prod.categoria_nombre }}</span>
 
-                            <!-- TÍTULO CON ENLACE (Mismo tamaño h-12 y line-clamp) -->
+
                             <Link :href="ProductController.show.url(prod.slug)">
                                 <h2 class="text-lg font-black text-pv-navy leading-tight italic uppercase tracking-tighter hover:text-pv-accent transition-colors line-clamp-2 h-12 overflow-hidden mb-1">
                                     {{ prod.nombre_comercial }}
@@ -163,7 +165,7 @@ const cleanLabel = (label: string) => label.replace('&laquo; Previous', '').repl
                                     <span class="text-[9px] text-gray-300 font-black uppercase tracking-widest">Precio Online</span>
                                     <span class="text-3xl font-black text-pv-navy tracking-tighter italic">S/{{ prod.precio_web }}</span>
                                 </div>
-                                <button class="bg-emerald-500 hover:bg-[#072D44] text-white p-4 rounded-2xl shadow-xl transition-all active:scale-95 group/cart shadow-emerald-500/20">
+                                <button @click="addToCart(prod)" class="bg-emerald-500 hover:bg-[#072D44] text-white p-4 rounded-2xl shadow-xl transition-all active:scale-95 group/cart shadow-emerald-500/20">
                                     <ShoppingCart class="size-6 group-hover/cart:rotate-12 transition-transform" />
                                 </button>
                             </div>
@@ -171,7 +173,7 @@ const cleanLabel = (label: string) => label.replace('&laquo; Previous', '').repl
                     </div>
                 </div>
 
-                <!-- MANTENEMOS: Paginación impecable -->
+
                 <div v-if="productos.links.length > 3" class="mt-20 flex justify-center items-center gap-2">
                     <template v-for="(link, k) in productos.links" :key="k">
                         <Link v-if="link.url" :href="link.url" 

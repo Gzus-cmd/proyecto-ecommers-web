@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import * as LucideIcons from 'lucide-vue-next'; 
 import PublicLayout from '@/layouts/PublicLayout.vue';
+import { useCart } from '@/composables/useCart';
 import * as CatalogController from '@/actions/App/Http/Controllers/Public/CatalogController';
 // Usaremos este para los enlaces de los productos
 import * as ProductController from '@/actions/App/Http/Controllers/Public/ProductController';
@@ -41,6 +42,8 @@ onMounted(() => {
 onUnmounted(() => {
     if (timer) clearInterval(timer);
 });
+
+const { addToCart } = useCart();
 </script>
 
 <template>
@@ -106,7 +109,7 @@ onUnmounted(() => {
                 <div v-for="prod in featuredProducts" :key="prod.sku" class="bg-white p-8 rounded-[3.5rem] border border-gray-100 hover:shadow-2xl transition-all group flex flex-col shadow-sm">
                     
 
-                    <Link :href="ProductController.show.url(prod.slug)" class="aspect-square bg-[#F8FAFC] rounded-[2.5rem] mb-8 overflow-hidden p-10 flex items-center justify-center relative border border-gray-100">
+                    <Link :href="`/producto/${prod.slug}`"  class="aspect-square bg-[#F8FAFC] rounded-[2.5rem] mb-8 overflow-hidden p-10 flex items-center justify-center relative border border-gray-100">
                         <img :src="prod.imagen_url" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700" />
                         <span class="absolute top-4 left-4 bg-rose-500 text-white text-[10px] font-black px-3 py-1.5 rounded-xl shadow-lg uppercase">-{{ prod.percentage }}%</span>
                     </Link>
@@ -126,7 +129,7 @@ onUnmounted(() => {
                             <div class="flex flex-col">
                                 <span class="text-3xl font-black text-[#072D44]">S/{{ prod.precio_web }}</span>
                             </div>
-                            <button class="bg-[#072D44] hover:bg-emerald-500 text-white p-4 rounded-2xl shadow-xl transition-all active:scale-90">
+                            <button @click="addToCart(prod)" class="bg-[#072D44] hover:bg-emerald-500 text-white p-4 rounded-2xl shadow-xl transition-all active:scale-90">
                                 <LucideIcons.Plus class="size-6" />
                             </button>
                         </div>
