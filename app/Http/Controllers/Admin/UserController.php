@@ -20,9 +20,14 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $users = User::with('roles')
+
+            ->withoutRole('cliente') 
+            
             ->when($request->search, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%");
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+                });
             })
             ->latest()
             ->paginate(10)
