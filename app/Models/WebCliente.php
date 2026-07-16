@@ -14,9 +14,7 @@ class WebCliente extends Model
         'nombres', 
         'apellidos', 
         'dni', 
-        'email', 
         'telefono', 
-        'password_hash', 
         'activo'
     ];
 
